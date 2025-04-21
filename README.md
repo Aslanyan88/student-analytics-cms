@@ -8,7 +8,7 @@ A full-stack web application for managing classes and student analytics, built w
 - 📊 **Analytics Dashboard** for each user role
 - 📝 **Assignment Management** (create, assign, grade)
 - 📅 **Attendance Tracking** with calendar UI
-- 👥 **Classroom Management** with drag-and-drop interface
+- 👥 **Classroom Management**
 - 📱 **Responsive Design** for all devices
 - 📧 **Email Notifications** for important events
 
