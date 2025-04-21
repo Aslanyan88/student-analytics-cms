@@ -1,0 +1,175 @@
+// This is your Prisma schema file
+// Learn more about it at https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String             @unique
+  password          String             // Hashed password
+  firstName         String
+  lastName          String
+  role              UserRole
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  isActive          Boolean            @default(true)
+  
+  // Relations
+  teacherClassrooms ClassroomTeacher[]
+  studentClassrooms ClassroomStudent[]
+  createdClassrooms Classroom[]        @relation("ClassroomCreator")
+  sentNotifications Notification[]     @relation("NotificationSender")
+  receivedNotifications Notification[] @relation("NotificationReceiver")
+  activityLogs      ActivityLog[]
+  assignments       Assignment[]       @relation("AssignmentCreator")
+  studentAssignments StudentAssignment[]
+   resetToken        String?            @db.VarChar(512)
+  resetTokenExpiry DateTime?
+  @@map("users")
+}
+
+model Classroom {
+  id          String             @id @default(uuid())
+  name        String
+  description String?            @db.Text
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  isActive    Boolean            @default(true)
+  
+  // Relations
+  creatorId   String
+  creator     User               @relation("ClassroomCreator", fields: [creatorId], references: [id])
+  teachers    ClassroomTeacher[]
+  students    ClassroomStudent[]
+  assignments Assignment[]
+  
+  @@map("classrooms")
+}
+
+model ClassroomTeacher {
+  id          String    @id @default(uuid())
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  teacherId   String
+  teacher     User      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  assignedAt  DateTime  @default(now())
+  
+  @@unique([classroomId, teacherId])
+  @@map("classroom_teachers")
+}
+
+model ClassroomStudent {
+  id          String    @id @default(uuid())
+  classroomId String
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignedAt  DateTime  @default(now())
+  
+  @@unique([classroomId, studentId])
+  @@map("classroom_students")
+}
+
+model Assignment {
+  id          String             @id @default(uuid())
+  title       String
+  description String?            @db.Text
+  dueDate     DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  isActive    Boolean            @default(true)
+  
+  // Is this assignment for the whole class or individual students?
+  isClassWide Boolean            @default(true)
+  
+  // Relations
+  classroomId String
+  classroom   Classroom          @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  creatorId   String
+  creator     User               @relation("AssignmentCreator", fields: [creatorId], references: [id])
+  students    StudentAssignment[]
+  
+  @@map("assignments")
+}
+
+model StudentAssignment {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status       String     @default("PENDING")
+  submittedAt  DateTime?
+  grade        Float?
+  feedback     String?    @db.Text
+  submissionContent String? @db.Text
+  fileUrl      String?
+  
+  // Add this relation to connect with SubmissionFile
+  files       SubmissionFile[]  // <-- Add this line
+  
+  @@unique([assignmentId, studentId])
+  @@map("student_assignments")
+}
+
+model ActivityLog {
+  id               String    @id @default(uuid())
+  date             DateTime  @default(now())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // For action logging
+  action           String?   // Added for tracking actions like ASSIGNMENT_SUBMISSION
+  details          String?   @db.Text // Added for detailed action description
+  
+  // For attendance
+  isPresent        Boolean?
+  
+  // For performance
+  performanceScore Int?
+  notes            String?   @db.Text
+  
+  @@map("activity_logs")
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  title       String
+  message     String   @db.Text
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  senderId    String
+  sender      User     @relation("NotificationSender", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User     @relation("NotificationReceiver", fields: [receiverId], references: [id])
+  
+  @@map("notifications")
+}
+
+model SubmissionFile {
+  id                  String            @id @default(uuid())
+  studentAssignmentId String
+  studentAssignment   StudentAssignment @relation(fields: [studentAssignmentId], references: [id], onDelete: Cascade)
+  filename            String
+  filePath            String
+  fileSize            Int
+  fileType            String
+  uploadedAt          DateTime          @default(now())
+  
+  @@map("submission_files")
+}

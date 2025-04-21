@@ -1,0 +1,32 @@
+{
+  "name": "student-analytics-system",
+  "version": "1.0.0",
+  "description": "Student Analytics & Class Management System",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "concurrently \"npm run start:client\" \"npm run start:server\"",
+    "start:client": "cd client && npm run start",
+    "start:server": "cd server && npm run start",
+    "setup": "npm install && cd client && npm install && cd ../server && npm install",
+    "db:push": "cd server && npm run prisma:push",
+    "db:generate": "cd server && npm run prisma:generate",
+    "db:seed": "cd server && npm run prisma:seed"
+  },
+  "keywords": [
+    "student",
+    "analytics",
+    "education",
+    "management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
