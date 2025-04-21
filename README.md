@@ -22,7 +22,7 @@ A full-stack web application for managing classes and student analytics, built w
 - **React Query** for data fetching
 - **React Hook Form** for form handling
 - **Chart.js** for analytics visualizations
-- **React Beautiful DnD** for drag-and-drop
+- **React Beautiful DnD** 
 
 ### Backend
 - **Express.js** with TypeScript
