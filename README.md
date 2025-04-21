@@ -31,21 +31,6 @@ A full-stack web application for managing classes and student analytics, built w
 - **JWT** for authentication
 - **Nodemailer** for email notifications
 
-## Project Structure
-
-```
-student-system/
-├── apps/
-│   ├── web/                      # Next.js frontend
-│   └── server/                   # Express backend
-├── packages/
-│   └── prisma/                   # Shared Prisma schema
-├── .env                          # Environment variables
-├── package.json                  # Root package.json
-└── README.md                     # Project documentation
-```
-
-## Getting Started
 
 ### Prerequisites
 
