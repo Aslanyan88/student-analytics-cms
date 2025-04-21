@@ -125,18 +125,6 @@ The backend provides the following API endpoints:
 
 The application can be deployed using various methods:
 
-### Docker Deployment
-
-1. Build the Docker images:
-   ```bash
-   docker-compose build
-   ```
-
-2. Run the containers:
-   ```bash
-   docker-compose up -d
-   ```
-
 ### Traditional Deployment
 
 1. Build the applications:
